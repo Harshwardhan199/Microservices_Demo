@@ -43,26 +43,26 @@ class LoginView(APIView):
             "access": str(refresh.access_token),
         })
 
-class DataView(APIView):
-    permission_classes = []  # Public if you handle JWT manually
+# class DataView(APIView):
+#     permission_classes = []  # Public if you handle JWT manually
 
-    def post(self, request):
-        token_str = request.data.get("accessToken")
-        if not token_str:
-            return Response({"error": "Token missing"}, status=400)
+#     def post(self, request):
+#         token_str = request.data.get("accessToken")
+#         if not token_str:
+#             return Response({"error": "Token missing"}, status=400)
 
-        try:
-            # Decode JWT
-            access_token = AccessToken(token_str)
-            user_id = access_token["user_id"]  # we stored str(_id) in token
+#         try:
+#             # Decode JWT
+#             access_token = AccessToken(token_str)
+#             user_id = access_token["user_id"]  # we stored str(_id) in token
 
-            # Fetch user from MongoDB
-            user = users_collection.find_one({"_id": ObjectId(user_id)})
-            if not user:
-                return Response({"error": "User not found"}, status=404)
+#             # Fetch user from MongoDB
+#             user = users_collection.find_one({"_id": ObjectId(user_id)})
+#             if not user:
+#                 return Response({"error": "User not found"}, status=404)
 
-            return Response({"email": user["email"]})
+#             return Response({"email": user["email"]})
 
-        except Exception as e:
-            return Response({"error": "Invalid token"}, status=401)
+#         except Exception as e:
+#             return Response({"error": "Invalid token"}, status=401)
 
