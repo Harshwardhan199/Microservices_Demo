@@ -15,7 +15,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",  # Required for DRF + auth
     "rest_framework",          # Django REST Framework
     "corsheaders",
-    "users",                   # Your app
 ]
 
 # Middleware (minimal, since no sessions/CSRF if pure API + JWT)
