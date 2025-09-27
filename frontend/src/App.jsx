@@ -8,38 +8,38 @@ function App() {
   const [email, setEmail] = useState("harsh@gmail.com");
   const [password, setPassword] = useState("qwer");
 
-  const [accessToken, setaccessToken] = useState("dsfst");
-  const [refreshToken, setrefreshToken] = useState("");
+  const [accessToken, setaccessToken] = useState("");
+  //const [refreshToken, setrefreshToken] = useState("");
 
   const [userEmail, setUserEmail] = useState();
 
   const handleLogin = async () => {
 
     try {
-      const res = await axios.post("http://127.0.0.1:8080/login/", {email, password});
+      const res = await axios.post("http://127.0.0.1:8080/login/", { email, password }, { withCredentials: true });
 
       //console.log("RefreshToken: ", res.data.refresh);
       //console.log("AccessToken: ", res.data.access);
-      
-      // setaccessToken(res.data.access);
+
+      setaccessToken(res.data.accessToken);
       // setrefreshToken(res.data.refresh);
 
       // console.log(res);
-      
+
       console.log(res.data.accessToken);
       console.log(res.data.user.email);
-      
+
       setIsLoggedIn(true);
     } catch (error) {
       console.log(error);
     }
-    
+
   };
 
-  const handleSignUp = async() => {
+  const handleSignUp = async () => {
 
     try {
-      const res = await axios.post("http://127.0.0.1:8080/register/", {email, password});
+      const res = await axios.post("http://127.0.0.1:8080/register/", { email, password });
       setLoginSignup(false);
     } catch (error) {
       console.log(error);
@@ -50,9 +50,9 @@ function App() {
     setIsLoggedIn(false);
   };
 
-  const getUserData = async() => {
+  const getUserData = async () => {
     try {
-      const res = await axios.post("http://127.0.0.1:8080/getData/", {accessToken});
+      const res = await axios.post("http://127.0.0.1:8080/getData/", {}, { withCredentials: true, headers: { Authorization: `Bearer ${accessToken}` } });
       console.log(res.data);
 
       setUserEmail(res.data.email);
@@ -108,7 +108,7 @@ function App() {
         {isLoggedIn &&
           <div className='flex flex-col gap-2'>
             <div className='flex justify-center'>
-              <button className='px-2 py-1 rounded-2xl bg-blue-200' onClick={getUserData}>{!userEmail? "Click to get User Email" : userEmail}</button>
+              <button className='px-2 py-1 rounded-2xl bg-blue-200' onClick={getUserData}>{!userEmail ? "Click to get User Email" : userEmail}</button>
             </div>
             <p className='text-center'>Login hogaya bhai tu</p>
             <p className='text-center'>Ab Logout karde</p>

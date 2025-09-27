@@ -11,9 +11,9 @@ app.use(express.json());
 
 // Routes
 app.get('/', (req, res)=> {
-    res.json({'message':"Auth API is running"});
+    res.json({'message':"Data API is running"});
 });
-app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
@@ -21,5 +21,5 @@ mongoose.connect(process.env.MONGO_URI)
 .catch((err) => console.error(err));
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8002;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

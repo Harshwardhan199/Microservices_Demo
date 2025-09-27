@@ -57,12 +57,12 @@ const login = async (req, res) => {
         const refreshToken = jwt.sign({ userId: existingUser._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN });
 
         //Save RefreshToken in HttpOnly cookie
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "Lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        // res.cookie("refreshToken", refreshToken, {
+        //     httpOnly: true,
+        //     secure: false,
+        //     sameSite: "Lax",
+        //     maxAge: 7 * 24 * 60 * 60 * 1000
+        // });
 
         //Save AccessToken with response
         res.status(201).json({
