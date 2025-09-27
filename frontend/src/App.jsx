@@ -21,9 +21,14 @@ function App() {
       //console.log("RefreshToken: ", res.data.refresh);
       //console.log("AccessToken: ", res.data.access);
       
-      setaccessToken(res.data.access);
-      setrefreshToken(res.data.refresh);
+      // setaccessToken(res.data.access);
+      // setrefreshToken(res.data.refresh);
 
+      // console.log(res);
+      
+      console.log(res.data.accessToken);
+      console.log(res.data.user.email);
+      
       setIsLoggedIn(true);
     } catch (error) {
       console.log(error);

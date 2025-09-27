@@ -7,3 +7,7 @@
 2025/09/26 14:58:29 [notice] 57092#67116: signal process started
 2025/09/26 15:36:52 [notice] 61852#67916: signal process started
 2025/09/26 16:28:46 [notice] 39736#66296: signal process started
+2025/09/27 08:46:51 [emerg] 9124#39456: unknown directive "lua_shared_dict" in E:\_NU\Capstone II\_Project\Microservices_Demo\gateway/conf/nginx.conf:6
+2025/09/27 08:48:48 [notice] 69536#30840: signal process started
+2025/09/27 08:49:59 [error] 29540#10040: *21 connect() failed (10061: No connection could be made because the target machine actively refused it) while connecting to upstream, client: 127.0.0.1, server: , request: "OPTIONS /getData/ HTTP/1.1", upstream: "http://127.0.0.1:8002/api/users/getData/", host: "127.0.0.1:8080", referrer: "http://localhost:5173/"
+2025/09/27 09:17:54 [notice] 67812#61492: signal process started
