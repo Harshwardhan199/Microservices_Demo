@@ -4,28 +4,15 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const getData = async (req, res) => {
-
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "No token provided" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
+    const { userId } = req.body;
+    
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
+        const user = await User.findById(userId);
 
-        const user = await User.findById(decoded.userId);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
+        const username = user.username;
+        const secret = user.secret;
 
-        // Main
-        const userEmail = user.email;
-
-        res.json({'email': userEmail});
+        res.json({ 'username': username, 'secret': secret});
 
     } catch (err) {
         console.error("Error getting data:", err);
@@ -33,5 +20,24 @@ const getData = async (req, res) => {
     }
 };
 
+const changeSecret = async (req, res) => {
+    const { userId, newSecret } = req.body;
+    
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
-module.exports = { getData };
+        user.secret = newSecret;
+        await user.save();
+        
+        res.status(200).json({ message: "Secret updated" });
+
+    } catch (err) {
+        console.error("Error getting data:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+module.exports = { getData, changeSecret };

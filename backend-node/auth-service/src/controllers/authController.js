@@ -1,11 +1,15 @@
 //const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
 const User = require("../models/User");
+
+// const fs = require("fs");
+// const path = require("path");
+// // Load the private key for signing
+// const privateKey = fs.readFileSync(path.join(__dirname, "../public-private-key/private.key"), "utf8");
 
 const register = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { username, email, password } = req.body;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -13,18 +17,16 @@ const register = async (req, res) => {
         }
 
         const newUser = new User({
+            username,
             email,
             password,
             //password: hashedPassword,
+            secret: 0,
         });
 
         await newUser.save();
 
-        res.status(201).json({
-            message: "Signup successful",
-            data: { email: newUser.email },
-            accessToken
-        });
+        res.status(201).json({ message: "Signup successful" });
 
     } catch (error) {
         console.error("Signup error:", error);
@@ -50,24 +52,24 @@ const login = async (req, res) => {
         //     return res.status(401).json({ error: "Invalid credentials" });
         // }
 
-        //AccessToken Creation
+        // AccessToken Creation
         const accessToken = jwt.sign({ userId: existingUser._id, email: existingUser.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
-        //RefreshToken Creation
+        // RefreshToken Creation
         const refreshToken = jwt.sign({ userId: existingUser._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN });
 
-        //Save RefreshToken in HttpOnly cookie
-        // res.cookie("refreshToken", refreshToken, {
-        //     httpOnly: true,
-        //     secure: false,
-        //     sameSite: "Lax",
-        //     maxAge: 7 * 24 * 60 * 60 * 1000
-        // });
+        // RS256 
+
+        // AccessToken Creation
+        //const accessToken = jwt.sign({ userId: existingUser._id, email: existingUser.email }, privateKey, { algorithm: "RS256", expiresIn: process.env.JWT_EXPIRES_IN });
+
+        // RefreshToken Creation
+        //const refreshToken = jwt.sign({ userId: existingUser._id }, privateKey, { algorithm: "RS256", expiresIn: process.env.JWT_REFRESH_EXPIRES_IN });
 
         //Save AccessToken with response
         res.status(201).json({
             message: "Login successful",
-            user: {email: existingUser.email },
+            user: { email: existingUser.email },
             accessToken,
             refreshToken
         });
@@ -78,5 +80,65 @@ const login = async (req, res) => {
     }
 };
 
+// const refresh = async (req, res) => {
+//     const { refreshToken } = req.body;    
+//     if (!refreshToken) {
+//         return res.status(401).json({ message: "No refresh token" });
+//     }
 
-module.exports = { register, login };
+//     try {
+//         // Verify refresh token with public key
+//         const decoded = jwt.verify(refreshToken, privateKey, { algorithms: ["RS256"] });
+
+//         // Find user
+//         const userFromDB = await User.findById(decoded.userId);
+//         if (!userFromDB) {
+//             return res.status(404).json({ message: "User not found" });
+//         }
+
+//         // Generate new access token with private key
+//         const accessToken = jwt.sign(
+//             { userId: userFromDB._id, email: userFromDB.email },
+//             privateKey,
+//             { algorithm: "RS256", expiresIn: process.env.JWT_EXPIRES_IN }
+//         );
+
+//         res.status(201).json({
+//             message: "Refresh successful",
+//             user: { email: userFromDB.email },
+//             accessToken,
+//         });
+//     } catch (err) {
+//         console.error("Refresh error:", err.message);
+//         return res.status(403).json({ message: "Invalid or expired refresh token" });
+//     }
+// };
+
+const refresh = async (req, res) => {
+    const { refreshToken } = req.body;
+    try {
+        if (!refreshToken) return res.status(401).json({ message: "No refresh token" });
+
+        jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
+            if (err) return res.status(403).json({ message: "Invalid refresh token" });
+
+            const userFromDB = await User.findById(decoded.userId);
+            if (!userFromDB) return res.status(404).json({ message: "User not found" });
+
+            const accessToken = jwt.sign({ userId: userFromDB._id, email: userFromDB.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+
+            res.status(201).json({
+                message: "Refresh successful",
+                user: { email: userFromDB.email },
+                accessToken
+            });
+
+        });
+
+    } catch (err) {
+        console.error("Login error:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+module.exports = { register, login, refresh };

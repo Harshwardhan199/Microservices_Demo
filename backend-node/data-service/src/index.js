@@ -6,7 +6,10 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-//app.use(cors());
+app.use(cors({
+  origin: "http://localhost:8080", 
+  credentials: true,               
+}));
 app.use(express.json());
 
 // Routes
