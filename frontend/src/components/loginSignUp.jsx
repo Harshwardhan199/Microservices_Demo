@@ -8,8 +8,8 @@ function LoginSignUp() {
     const [loginSignup, setLoginSignup] = useState(true);
 
     const [username, setUsername] = useState("Harsh");
-    const [email, setEmail] = useState("harsh@gmail.com");
-    const [password, setPassword] = useState("qwer");
+    const [email, setEmail] = useState("Harsh@gmail.com");
+    const [password, setPassword] = useState("1234");
 
     const handleLogin = async () => {
         try {

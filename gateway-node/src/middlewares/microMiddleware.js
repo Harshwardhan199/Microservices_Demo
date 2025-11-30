@@ -31,19 +31,22 @@ module.exports = async function (req, res, next) {
     let tokenEntry = tokenCache[targetService];
 
     if (!isTokenValid(tokenEntry)) {
-      console.log("Generating new G2S token for:", targetService);
-
       const serviceKey = SERVICE_KEYS[targetService];
       if (!serviceKey) throw new Error(`No service key found for ${targetService}`);
 
       const token = jwt.sign({ service: "gateway", target: targetService }, serviceKey, { expiresIn: TOKEN_TTL });
 
+      console.log(`New G2S Token for ${targetService}: `, token);
+  
+      
       tokenEntry = { token, expiresAt: Date.now() + TOKEN_TTL * 1000 };
       tokenCache[targetService] = tokenEntry;
     }
 
     // Attach token to request 
     req.g2sToken = tokenEntry.token;
+
+    console.log("Token in cache: ", tokenCache);
 
     next();
   } catch (error) {

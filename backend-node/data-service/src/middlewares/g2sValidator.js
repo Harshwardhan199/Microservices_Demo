@@ -8,6 +8,8 @@ module.exports = (req, res, next) => {
     // Each microservice validates using its own secret key
     const decoded = jwt.verify(token, process.env.DATA_SERVICE_KEY || "Data_Service_Key");
 
+    console.log(decoded);
+    
     if (decoded.target !== "dataService") {
       return res.status(403).json({ error: "Invalid target in G2S token" });
     }

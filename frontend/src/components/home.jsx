@@ -17,12 +17,16 @@ function Home() {
     useEffect(() => {
         const checkUser = async () => {
             try {
+                console.log("Now Sending Request");
+                
                 const res = await axios.post("http://localhost:8080/auth/refresh", {}, { withCredentials: true });
 
+                // To remove error logging in browser on failior
                 if (res.status == 200){
                     return navigate("/login");
                 }
-
+                console.log("AccessToken: ", res.data.accessToken);
+                
                 setaccessToken(res.data.accessToken);
             } catch (error) {
                 //navigate("/login");
@@ -33,11 +37,11 @@ function Home() {
         checkUser();
     }, []);
 
-    useEffect(() => {
-        if (accessToken) {
-            getUserData();
-        }
-    }, [accessToken]);
+    // useEffect(() => {
+    //     if (accessToken) {
+    //         getUserData();
+    //     }
+    // }, [accessToken]);
 
     const handleLogout = async () => {
         try {
@@ -49,9 +53,9 @@ function Home() {
 
     };
 
-    const getUserData = async () => {
+    const getUserData = async () => {  
         try {
-            const res = await axiosInstance.post("http://localhost:8080/user/getData", {}, { withCredentials: true, headers: { Authorization: `Bearer ${accessToken}` } });
+            const res = await axiosInstance.get("http://localhost:8080/user/getData", { headers: { Authorization: `Bearer ${accessToken}` } });
 
             setUserEmail(res.data.username);
             setSecret(res.data.secret);
@@ -61,14 +65,14 @@ function Home() {
     };
 
     const changeSecret = async () => {
-        try {
-            await axiosInstance.post("http://localhost:8080/user/changeSecret", { newSecret }, { withCredentials: true, headers: { Authorization: `Bearer ${accessToken}` } });
-            setSecret(newSecret);
-            setSecretChange(false);
+        // try {
+        //     await axiosInstance.post("http://localhost:8080/user/changeSecret", { newSecret }, { withCredentials: true, headers: { Authorization: `Bearer ${accessToken}` } });
+        //     setSecret(newSecret);
+        //     setSecretChange(false);
 
-        } catch (error) {
-            console.log(error);
-        }
+        // } catch (error) {
+        //     console.log(error);
+        // }
     };
 
     return (

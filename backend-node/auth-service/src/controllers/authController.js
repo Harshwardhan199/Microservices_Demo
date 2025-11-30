@@ -48,13 +48,12 @@ const login = async (req, res) => {
         //     return res.status(401).json({ error: "Invalid credentials" });
         // }
 
-        // AccessToken Creation
+        // AccessToken 
         const accessToken = jwt.sign({ userId: existingUser._id, email: existingUser.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
-        // RefreshToken Creation
+        // RefreshToken 
         const refreshToken = jwt.sign({ userId: existingUser._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN });
 
-        //Save AccessToken with response
         res.status(201).json({
             message: "Login successful",
             user: { email: existingUser.email },
@@ -70,18 +69,18 @@ const login = async (req, res) => {
 
 const google = async (req, res) => {
   try {
-    const { code } = req.body; // receive code from frontend (GIS SDK popup)
+    const { code } = req.body; 
 
     if (!code) return res.status(400).json({ message: "Authorization code required" });
 
-    // Exchange authorization code for access_token
+    // Authorization code --> access_token
     const tokenResponse = await axios.post(
       "https://oauth2.googleapis.com/token",
       new URLSearchParams({
         code,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: "postmessage", // for popup
+        redirect_uri: "postmessage", 
         grant_type: "authorization_code",
       }),
       { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
@@ -108,20 +107,21 @@ const google = async (req, res) => {
       });
     }
 
-    // Create JWTs
+    // JWTs
     const accessToken = jwt.sign(
       { userId: user._id, username: user.username, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
-
+    console.log("AccessToken: ",accessToken);
+    
     const refreshToken = jwt.sign(
       { userId: user._id },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
     );
+    console.log("RefreshToken: ",refreshToken);
 
-    // Return tokens and user info
     res.status(200).json({
       message: "Google login successful",
       user: { username: user.username, email: user.email },
@@ -134,7 +134,7 @@ const google = async (req, res) => {
   }
 };
 
-const refresh = async (req, res) => {
+const refresh = async (req, res) => {  
     const { refreshToken } = req.body;
     try {
         if (!refreshToken) return res.status(401).json({ message: "No refresh token" });
